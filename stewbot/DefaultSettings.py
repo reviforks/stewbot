@@ -143,8 +143,8 @@ config = StrictDict({
 ## Generated configuration (IRC)
 ###################
 config.irc.users_by_level = {
-	ACCESS_WHITELISTED:config.irc.wiki_names_by_level[ACCESS_WHITELISTED].keys(),
-	ACCESS_OPERATOR:config.irc.wiki_names_by_level[ACCESS_OPERATOR].keys()
+	ACCESS_WHITELISTED:list(config.irc.wiki_names_by_level[ACCESS_WHITELISTED].keys()),
+	ACCESS_OPERATOR:list(config.irc.wiki_names_by_level[ACCESS_OPERATOR].keys())
 }
 config.irc.users_by_level[ACCESS_WHITELISTED].sort()
 config.irc.users_by_level[ACCESS_OPERATOR].sort()
@@ -163,7 +163,7 @@ documentation = {
 	# special documentation
 	None:'I\'m a steward utility script, running stewbot %s. See: \'!help access\', \'!help commands\', or \'!help status\'' % VERSION,
 	'ACCESS':'commands are either open (anyone can issue them), whitelisted (whitelisted users only), or restricted (only operators, or whitelisted users if an operator !commit\'s them)',
-	'ACCESSLIST':'operators: [%s]; whitelisted users: [%s]' % (', '.join(config.irc.wiki_names_by_level[ACCESS_OPERATOR].values()), ', '.join(config.irc.wiki_names_by_level[ACCESS_WHITELISTED].values())),
+	'ACCESSLIST':'operators: [%s]; whitelisted users: [%s]' % (', '.join(list(config.irc.wiki_names_by_level[ACCESS_OPERATOR].values())), ', '.join(list(config.irc.wiki_names_by_level[ACCESS_WHITELISTED].values()))),
 	'commands':'recognized commands: open [%s]; whitelisted [%s]; restricted [%s]. Say \'!help command_here\' for help on a specific command' % (', '.join(config['irc']['commands_by_level'][ACCESS_OPEN]), ', '.join(config['irc']['commands_by_level'][ACCESS_WHITELISTED]), ', '.join(config['irc']['commands_by_level'][ACCESS_OPERATOR])),
 
 	# meta-commands
@@ -204,7 +204,7 @@ documentation = {
 	'stab':'lock global account, scan edits, and block all local accounts; syntax is \'!stab name\'',
 	'stabhide':'lock & hide global account, scan edits, block all local accounts, and oversight name in local logs and edit histories; syntax is \'!stabhide name\' or \'!stabhide name > option\' (where option can be \'hard\', indicating that local accounts should be hidden even if they have edits)',
 	'withlist':'Parse a plaintext newline-delimited list of values at the given URL, and queue \'!command > value > arguments\' for each value (!commit\'s needed); syntax is \'!withlist url > command > arguments...\'',
-	'wikiset':'Add or remove wikis in a wikiset; syntax is \'!wikiset id > +wiki,wiki,-wiki\' or \'!wikiset id > wiki > reason\', where id is one of [%s]' % ','.join(['%s=%s' % (k,v) for k,v in config['web']['wikiset_ids'].items()]),
+	'wikiset':'Add or remove wikis in a wikiset; syntax is \'!wikiset id > +wiki,wiki,-wiki\' or \'!wikiset id > wiki > reason\', where id is one of [%s]' % ','.join(['%s=%s' % (k,v) for k,v in list(config['web']['wikiset_ids'].items())]),
 
 	# irc-only commands
 	'links':'provide relevant links for IPs or global accounts; syntax is \'!links ip or name\'',

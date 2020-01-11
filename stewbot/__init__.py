@@ -119,7 +119,7 @@ class Stewardbot( BaseClass ):
 
 	def respond( self, data, msg, dot = True, nick = True ):
 		self.trace()
-		self.irc.sendMessage( data.channel, data.nick if nick else None, u'%s.' % self.Decode(msg) if dot else msg )
+		self.irc.sendMessage( data.channel, data.nick if nick else None, '%s.' % self.Decode(msg) if dot else msg )
 	def respondPrivately( self, data, msg ):
 		self.irc.sendPrivateMessage( data.nick, msg )
 
@@ -319,7 +319,7 @@ class Stewardbot( BaseClass ):
 	def defaultArg( self, data, index, value ):
 		if not index in data.args:
 			if len(data.args) < index:
-				raise self.Error, 'insufficient arguments to default at index %s' % str(index)
+				raise self.Error('insufficient arguments to default at index %s' % str(index))
 			data.args.append( value )
 
 
@@ -375,7 +375,7 @@ class Stewardbot( BaseClass ):
 			)
 			if self.options['confirm_all']:
 				self.respond( data, 'done' )
-		except self.Error, error:
+		except self.Error as error:
 			self.respond( data, error )
 
 
@@ -398,7 +398,7 @@ class Stewardbot( BaseClass ):
 		try:
 			url = 'http://toolserver.org/~pathoschild/stewardry/?%s' % self.UrlEncode( {'wiki':args[WIKI]} )
 			self.browser.load( url = url, parameters = {'api':'1'}, parse_as = 'xml', GET = True )
-		except self.Error, e:
+		except self.Error as e:
 			self.respond( data, e )
 			return
 		except:
@@ -446,7 +446,7 @@ class Stewardbot( BaseClass ):
 		# validate arguments
 		if self.syntaxError( data, count = 2 ):
 			return
-		if self.syntaxError( data, '"%s" is not a recognized config option' % args[OPTION], condition=args[OPTION] in self.options.keys() ):
+		if self.syntaxError( data, '"%s" is not a recognized config option' % args[OPTION], condition=args[OPTION] in list(self.options.keys()) ):
 			return
 		if self.syntaxError( data, '"%s" is not a recognized value for config option "%s"' % (args[VALUE], args[OPTION]), condition=args[VALUE] in ['0', '1'] ):
 			return
@@ -479,7 +479,7 @@ class Stewardbot( BaseClass ):
 
 		try:
 			(user, wiki) = self.splitIdentifier( args[TARGET], allowImplicit = True )
-		except self.Error, e:
+		except self.Error as e:
 			self.respond( data, e )
 			return
 
@@ -538,7 +538,7 @@ class Stewardbot( BaseClass ):
 					expiry = block['expiry'][:-4].replace('T', ' ')
 					blocks.append( '%s until %s' % (target, expiry) )
 				out += '; blocked on %s: [%s]' % (wiki, ', '.join(blocks))
-		except self.Error, e:
+		except self.Error as e:
 			self.respond( data, e )
 		finally:
 			self.unhandleAt()
@@ -572,7 +572,7 @@ class Stewardbot( BaseClass ):
 			)
 			if self.options['confirm_all']:
 				self.respond(data, 'done')
-		except self.Error, e:
+		except self.Error as e:
 			self.respond(data, e)
 
 
@@ -598,7 +598,7 @@ class Stewardbot( BaseClass ):
 			)
 			if self.options['confirm_all']:
 				self.respond( data, 'done' )
-		except self.Error, e:
+		except self.Error as e:
 			self.respond( data, e )
 
 
@@ -629,7 +629,7 @@ class Stewardbot( BaseClass ):
 			# !help > status
 			elif args[TOPIC] == 'status':
 				channels = ' '.join( self.irc.getChannels() )
-				options  = ', '.join( ['%s=%s' % (k,self.options[k]) for k in self.options.keys()] )
+				options  = ', '.join( ['%s=%s' % (k,self.options[k]) for k in list(self.options.keys())] )
 				web_stat = self.browser.loggedIn( force_check = True )
 				if not web_stat:
 					web_stat = '\x0304logged out\x03'
@@ -733,7 +733,7 @@ class Stewardbot( BaseClass ):
 		args[USER] = self.capitalizeFirstLetter( args[USER] )
 		try:
 			wikis = self.browser.getGlobalDetails( args[USER] )
-		except self.Error, e:
+		except self.Error as e:
 			self.respond( data, e )
 			return
 		count_wikis = len( wikis )
@@ -803,13 +803,13 @@ class Stewardbot( BaseClass ):
 		# fetch data
 		try:
 			details = self.browser.lookupCode( data.args[0] )
-		except self.Error, e:
+		except self.Error as e:
 			self.respond( data, e )
 			return
 
 		# display data
 		for lang in details:
-			self.respond( data, u'%s in %s: %s (%s, %s%s)' % (lang['code'], lang['list'], lang['name'], lang['scope'], lang['type'], u'; %s' % lang['notes'] if lang['notes'] else u''), nick = False )
+			self.respond( data, '%s in %s: %s (%s, %s%s)' % (lang['code'], lang['list'], lang['name'], lang['scope'], lang['type'], '; %s' % lang['notes'] if lang['notes'] else ''), nick = False )
 
 
 	###################
@@ -835,12 +835,12 @@ class Stewardbot( BaseClass ):
 		# fetch data
 		try:
 			result = self.browser.translate( source=source, target=target, text=text )
-		except self.Error, e:
+		except self.Error as e:
 			self.respond( data, e )
 			return
 
 		# display data
-		self.respond( data, u'Google claims %s -> %s: %s' % (result['source_lang'], result['target_lang'], result['target_text']) )
+		self.respond( data, 'Google claims %s -> %s: %s' % (result['source_lang'], result['target_lang'], result['target_text']) )
 
 
 	###################
@@ -854,7 +854,7 @@ class Stewardbot( BaseClass ):
 		# validate args
 		if self.syntaxError( data, count=[2,3] ):
 			return
-		if self.syntaxError( data, 'invalid wikiset id', condition = self.isInt(args[ID]) and int(args[ID]) in self.config.web.wikiset_ids.keys() ):
+		if self.syntaxError( data, 'invalid wikiset id', condition = self.isInt(args[ID]) and int(args[ID]) in list(self.config.web.wikiset_ids.keys()) ):
 			return
 
 		# prepare reason
@@ -885,7 +885,7 @@ class Stewardbot( BaseClass ):
 			)
 			if self.options['confirm_all']:
 				self.respond( data, 'done' )
-		except self.Error, e:
+		except self.Error as e:
 			self.respond( data, e )
 
 
@@ -947,7 +947,7 @@ class Stewardbot( BaseClass ):
 	def handle_debug( self, data ):
 		self.trace()
 		self.respond( data, self.bash.chloe(), dot = False, nick = False )
-		raise Exception, "Chloe crash! :D"
+		raise Exception("Chloe crash! :D")
 
 
 	#############################################################################################################
@@ -967,7 +967,7 @@ class Stewardbot( BaseClass ):
 			return
 
 		# validate authorization
-		if data.host in self.users[self.INDEX_OPERATORS].keys():
+		if data.host in list(self.users[self.INDEX_OPERATORS].keys()):
 			requester = self.users[self.INDEX_OPERATORS][data.host]
 		else:
 			self.respond( data, 'you are not authorized to use this command (you must be an operator).' )
@@ -984,7 +984,7 @@ class Stewardbot( BaseClass ):
 				reason   = 'checking crosswiki abuse',
 				allowUnchanged = True
 			)
-		except self.Error, e:
+		except self.Error as e:
 			self.respond( data, e )
 			return
 
@@ -1041,7 +1041,7 @@ class Stewardbot( BaseClass ):
 				self.respond( data, '%s, scanning local accounts..' % desc )
 			else:
 				self.respond( data, 'already %s, scanning local accounts..' % desc )
-		except self.Error, e:
+		except self.Error as e:
 			self.respond( data, e )
 			return
 
@@ -1052,7 +1052,7 @@ class Stewardbot( BaseClass ):
 		try:
 			wikis = self.parseAt( '%s@global' % user, allowGlobal = True )
 			count_wikis = len( wikis )
-		except self.Error, e:
+		except self.Error as e:
 			self.respond( data, e )
 			return
 
@@ -1137,7 +1137,7 @@ class Stewardbot( BaseClass ):
 				resColor = '15' if skipped else ''
 				noteColor = '04' if (top_edits or new_pages or blocked) else '' if edits else '15'
 				self.respond( data, '\x03%s%s %s\x03%s%s\x03' % (resColor, msgPrefix, result, noteColor, notes), nick = False )
-			except self.Error, e:
+			except self.Error as e:
 				self.respond( data, '%s %s %s' % (msgPrefix, wiki, e), nick = False )
 			finally:
 				count_wikis -= 1
@@ -1184,7 +1184,7 @@ class Stewardbot( BaseClass ):
 		try:
 			(user, wikis) = self.parseAt( args[USER], allowGlobal = True, getUsername = True, allowImplicit = False )
 			count = len( wikis )
-		except self.Error, e:
+		except self.Error as e:
 			self.respond( data, e )
 			return
 
@@ -1205,7 +1205,7 @@ class Stewardbot( BaseClass ):
 					reblock = reblock
 				)
 				self.respond( data, '[%s%s] %s' % ('%s:' % count if (count > 1) else '', wiki, action) )
-			except self.Error, e:
+			except self.Error as e:
 				self.respond( data, '[%s%s] %s' % ('%s:' % count if (count > 1) else '', wiki, e) )
 			finally:
 				count -= 1
@@ -1227,7 +1227,7 @@ class Stewardbot( BaseClass ):
 		try:
 			(title, wiki) = self.parseAt( data.args[TITLE], allowGlobal = False, getUsername = True, allowImplicit = False )
 			wiki = wiki[0]
-		except self.Error, e:
+		except self.Error as e:
 			self.respond( data, e )
 			return
 
@@ -1239,7 +1239,7 @@ class Stewardbot( BaseClass ):
 				reason = data.args[REASON]
 			)
 			self.respond( data, '[%s] deleted' % wiki )
-		except self.Error, e:
+		except self.Error as e:
 			self.respond( data, '[%s] %s' % (wiki, e) )
 		finally:
 			self.unhandleAt()
@@ -1262,7 +1262,7 @@ class Stewardbot( BaseClass ):
 		try:
 			(user, wikis) = self.parseAt( args[USER], allowGlobal = True, getUsername = True )
 			count = len( wikis )
-		except self.Error, e:
+		except self.Error as e:
 			self.respond( data, e )
 			return
 
@@ -1278,7 +1278,7 @@ class Stewardbot( BaseClass ):
 					reason  = args[REASON]
 				)
 				self.respond( data, '[%s%s] done' % ('%s:' % count if (count > 1) else '', wiki) )
-			except self.Error, e:
+			except self.Error as e:
 				self.respond( data, '[%s%s] %s' % ('%s:' % count if (count > 1) else '', wiki, e) )
 			finally:
 				count -= 1
@@ -1305,7 +1305,7 @@ class Stewardbot( BaseClass ):
 		try:
 			(user, wiki) = self.parseAt( args[USER], allowGlobal = False, allowImplicit = False, getUsername = True )
 			wiki = wiki[0]
-		except self.Error, e:
+		except self.Error as e:
 			self.respond( data, e )
 			return
 
@@ -1331,7 +1331,7 @@ class Stewardbot( BaseClass ):
 			self.browser.setRights( target, groups, args[REASON] )
 			if self.options['confirm_all']:
 				self.respond( data, 'done' )
-		except self.Error, e:
+		except self.Error as e:
 			self.respond( data, e )
 
 
@@ -1369,7 +1369,7 @@ class Stewardbot( BaseClass ):
 				msg += ', and global groups [%s]' % ', '.join( global_groups ) if len( global_groups ) else ', and no global groups'
 				self.respond( data, msg )
 
-		except self.Error, e:
+		except self.Error as e:
 			self.respond( data, '"%s": %s' % ('%s@%s' % (user, wiki) if wiki else args[USER], e) )
 			return
 		finally:
@@ -1391,7 +1391,7 @@ class Stewardbot( BaseClass ):
 			if allowImplicit:
 				return identifier, 'metawiki'
 			else:
-				raise self.Error, 'implicit "@metawiki" not permitted in this context'
+				raise self.Error('implicit "@metawiki" not permitted in this context')
 
 		# user@wiki
 		try:
@@ -1399,8 +1399,8 @@ class Stewardbot( BaseClass ):
 			if wiki != 'global':
 				self.browser.getUrl( prefix = wiki )
 			return user, wiki
-		except self.Error, e:
-			raise self.Error, e
+		except self.Error as e:
+			raise self.Error(e)
 
 
 	###################
@@ -1419,7 +1419,7 @@ class Stewardbot( BaseClass ):
 				else:
 					return wikis
 			else:
-				raise self.Error, '\'global\' is not allowed in this context'
+				raise self.Error('\'global\' is not allowed in this context')
 		else:
 			if getUsername:
 				return user, [wiki]

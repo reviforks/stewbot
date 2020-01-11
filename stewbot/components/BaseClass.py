@@ -158,7 +158,7 @@ class BaseClass( object ):
 				# get arguments
 				args = inspect.getargvalues( frame )
 				if overrides:
-					for k in overrides.keys():
+					for k in list(overrides.keys()):
 						args[3][k] = overrides[k]
 				if args[0][0] == 'self':
 					args[0].pop(0)
@@ -169,7 +169,7 @@ class BaseClass( object ):
 					varargs     = args[1],
 					varkw       = args[2],
 					locals      = args[3],
-					formatvalue = lambda v: u'=%s' % self._FormatArg(self.Decode(v))
+					formatvalue = lambda v: '=%s' % self._FormatArg(self.Decode(v))
 				)
 
 				# trace
@@ -231,10 +231,10 @@ class BaseClass( object ):
 		@param value: an arbitrary object to format for output.
 		"""
 		if isinstance(value, BaseClass):
-			return u'<%s>' % inspect.getmodule(value).__name__
+			return '<%s>' % inspect.getmodule(value).__name__
 		elif inspect.ismethod(value):
-			return u'{%s::%s}' % (inspect.getmodule(value).__name__, value.__name__)
+			return '{%s::%s}' % (inspect.getmodule(value).__name__, value.__name__)
 		elif inspect.isfunction(value):
-			return u'{%s}' % value.__name__
+			return '{%s}' % value.__name__
 		else:
 			return value

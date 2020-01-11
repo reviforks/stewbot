@@ -107,7 +107,7 @@ class Browser( BaseBrowser ):
 				prefix = prefix.replace( '-', '_' ).replace( 'wikipedia', 'wiki' )
 				data = self.wikis[prefix]
 			except KeyError:
-				raise self.Error, u'There is no wiki with the database prefix "%s"' % prefix
+				raise self.Error('There is no wiki with the database prefix "%s"' % prefix)
 
 		elif domain:
 			try:
@@ -115,7 +115,7 @@ class Browser( BaseBrowser ):
 				prefix = self.domains[domain]
 				data = self.wikis[prefix]
 			except KeyError:
-				raise self.Error, u'There is no wiki with the domain "%s"' % domain
+				raise self.Error('There is no wiki with the domain "%s"' % domain)
 
 		else:
 			try:
@@ -123,7 +123,7 @@ class Browser( BaseBrowser ):
 				family = family.replace( 'wikipedia', 'wiki' )
 				data = self.wikis[code + family]
 			except KeyError:
-				raise self.Error, u'The "%s" family has no "%s" wiki' % (family, code)
+				raise self.Error('The "%s" family has no "%s" wiki' % (family, code))
 
 		# return data
 		if want:

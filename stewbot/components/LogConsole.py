@@ -23,4 +23,4 @@ class LogConsole(ILogger):
 		@param message: arbitrary message to log.
 		@return None
 		"""
-		print "[" + time.strftime("%Y-%m-%d %H:%M:%S") + "] " + Formatting.Encode(message)
+		print("[" + time.strftime("%Y-%m-%d %H:%M:%S") + "] " + Formatting.Encode(message))

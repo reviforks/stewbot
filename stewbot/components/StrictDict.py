@@ -29,8 +29,8 @@ class StrictDict( dict ):
 	## Handle foo.key (get)
 	###################
 	def __getitem__( self, key ):
-		if not self.has_key(key):
-			raise AttributeError, 'Cannot read %s[\'%s\'] because the key is not defined.' % (self.__name__, key)
+		if key not in self:
+			raise AttributeError('Cannot read %s[\'%s\'] because the key is not defined.' % (self.__name__, key))
 		return dict.__getitem__( self, key )
 
 
@@ -39,10 +39,10 @@ class StrictDict( dict ):
 	###################
 	#noinspection PyMethodOverriding
 	def __setitem__( self, key, value, _override = False ):
-		if not _override and not self.has_key(key):
-			if not self.has_key('__name__'):
+		if not _override and key not in self:
+			if '__name__' not in self:
 				self.add( '__name__', '<undef>' )
-			raise AttributeError, 'Cannot modify %s[\'%s\'] because the key is not defined. To add a new key, use %s.add(\'%s\', value).' % (self.__name__, key, self.__name__, key)
+			raise AttributeError('Cannot modify %s[\'%s\'] because the key is not defined. To add a new key, use %s.add(\'%s\', value).' % (self.__name__, key, self.__name__, key))
 		dictItems = self._getItemsOrFalse(value)
 		if dictItems is False:
 			dict.__setitem__( self, key, value )
@@ -63,13 +63,13 @@ class StrictDict( dict ):
 		return [value for (key, value) in dict.items(self) if key != '__name__']
 
 	def iterkeys(self):
-		return dict.iterkeys(dict(self.items()))
+		return dict.iterkeys(dict(list(self.items())))
 
 	def itervalues(self):
-		return dict.itervalues(dict(self.items()))
+		return dict.itervalues(dict(list(self.items())))
 
 	def __iter__(self):
-		return dict.__iter__(dict(self.items()))
+		return dict.__iter__(dict(list(self.items())))
 
 
 	###################
@@ -87,7 +87,7 @@ class StrictDict( dict ):
 
 		## not a dict!
 		if not items:
-			raise TypeError, 'StrictDict cannot consume a non-dictionary object'
+			raise TypeError('StrictDict cannot consume a non-dictionary object')
 
 		## consume
 		else:
@@ -101,7 +101,7 @@ class StrictDict( dict ):
 	###################
 	def _getItemsOrFalse(self, obj):
 		try:
-			return obj.items()
+			return list(obj.items())
 		except AttributeError:
 			return False
 

@@ -13,7 +13,7 @@ import types
 # Autodetects character encodings.
 # Download from http://chardet.feedparser.org/
 try:
-    import chardet
+    from . import chardet
 #    import chardet.constants
 #    chardet.constants._debug = 1
 except ImportError:
@@ -52,9 +52,9 @@ class UnicodeDammit:
                      self._detectEncoding(markup, isHTML)
         self.smartQuotesTo = smartQuotesTo
         self.triedEncodings = []
-        if markup == '' or isinstance(markup, unicode):
+        if markup == '' or isinstance(markup, str):
             self.originalEncoding = None
-            self.unicode = unicode(markup)
+            self.str = str(markup)
             return
 
         u = None
@@ -67,7 +67,7 @@ class UnicodeDammit:
                 if u: break
 
         # If no luck and we have auto-detection library, try that:
-        if not u and chardet and not isinstance(self.markup, unicode):
+        if not u and chardet and not isinstance(self.markup, str):
             u = self._convertFrom(chardet.detect(self.markup)['encoding'])
 
         # As a last resort, try utf-8 and windows-1252:
@@ -76,7 +76,7 @@ class UnicodeDammit:
                 u = self._convertFrom(proposed_encoding)
                 if u: break
 
-        self.unicode = u
+        self.str = u
         if not u: self.originalEncoding = None
 
     def _subMSChar(self, match):
@@ -84,7 +84,7 @@ class UnicodeDammit:
         entity."""
         orig = match.group(1)
         sub = self.MS_CHARS.get(orig)
-        if type(sub) == types.TupleType:
+        if type(sub) == tuple:
             if self.smartQuotesTo == 'xml':
                 sub = '&#x'.encode() + sub[1].encode() + ';'.encode()
             else:
@@ -114,7 +114,7 @@ class UnicodeDammit:
             u = self._toUnicode(markup, proposed)
             self.markup = u
             self.originalEncoding = proposed
-        except Exception, e:
+        except Exception as e:
             # print "That didn't work!"
             # print e
             return None
@@ -143,7 +143,7 @@ class UnicodeDammit:
         elif data[:4] == '\xff\xfe\x00\x00':
             encoding = 'utf-32le'
             data = data[4:]
-        newdata = unicode(data, encoding)
+        newdata = str(data, encoding)
         return newdata
 
     def _detectEncoding(self, xml_data, isHTML=False):
@@ -156,41 +156,41 @@ class UnicodeDammit:
             elif xml_data[:4] == '\x00\x3c\x00\x3f':
                 # UTF-16BE
                 sniffed_xml_encoding = 'utf-16be'
-                xml_data = unicode(xml_data, 'utf-16be').encode('utf-8')
+                xml_data = str(xml_data, 'utf-16be').encode('utf-8')
             elif (len(xml_data) >= 4) and (xml_data[:2] == '\xfe\xff') \
                      and (xml_data[2:4] != '\x00\x00'):
                 # UTF-16BE with BOM
                 sniffed_xml_encoding = 'utf-16be'
-                xml_data = unicode(xml_data[2:], 'utf-16be').encode('utf-8')
+                xml_data = str(xml_data[2:], 'utf-16be').encode('utf-8')
             elif xml_data[:4] == '\x3c\x00\x3f\x00':
                 # UTF-16LE
                 sniffed_xml_encoding = 'utf-16le'
-                xml_data = unicode(xml_data, 'utf-16le').encode('utf-8')
+                xml_data = str(xml_data, 'utf-16le').encode('utf-8')
             elif (len(xml_data) >= 4) and (xml_data[:2] == '\xff\xfe') and \
                      (xml_data[2:4] != '\x00\x00'):
                 # UTF-16LE with BOM
                 sniffed_xml_encoding = 'utf-16le'
-                xml_data = unicode(xml_data[2:], 'utf-16le').encode('utf-8')
+                xml_data = str(xml_data[2:], 'utf-16le').encode('utf-8')
             elif xml_data[:4] == '\x00\x00\x00\x3c':
                 # UTF-32BE
                 sniffed_xml_encoding = 'utf-32be'
-                xml_data = unicode(xml_data, 'utf-32be').encode('utf-8')
+                xml_data = str(xml_data, 'utf-32be').encode('utf-8')
             elif xml_data[:4] == '\x3c\x00\x00\x00':
                 # UTF-32LE
                 sniffed_xml_encoding = 'utf-32le'
-                xml_data = unicode(xml_data, 'utf-32le').encode('utf-8')
+                xml_data = str(xml_data, 'utf-32le').encode('utf-8')
             elif xml_data[:4] == '\x00\x00\xfe\xff':
                 # UTF-32BE with BOM
                 sniffed_xml_encoding = 'utf-32be'
-                xml_data = unicode(xml_data[4:], 'utf-32be').encode('utf-8')
+                xml_data = str(xml_data[4:], 'utf-32be').encode('utf-8')
             elif xml_data[:4] == '\xff\xfe\x00\x00':
                 # UTF-32LE with BOM
                 sniffed_xml_encoding = 'utf-32le'
-                xml_data = unicode(xml_data[4:], 'utf-32le').encode('utf-8')
+                xml_data = str(xml_data[4:], 'utf-32le').encode('utf-8')
             elif xml_data[:3] == '\xef\xbb\xbf':
                 # UTF-8 with BOM
                 sniffed_xml_encoding = 'utf-8'
-                xml_data = unicode(xml_data[3:], 'utf-8').encode('utf-8')
+                xml_data = str(xml_data[3:], 'utf-8').encode('utf-8')
             else:
                 sniffed_xml_encoding = 'ascii'
                 pass
@@ -255,7 +255,7 @@ class UnicodeDammit:
                     250,251,252,253,254,255)
             import string
             c.EBCDIC_TO_ASCII_MAP = string.maketrans( \
-            ''.join(map(chr, range(256))), ''.join(map(chr, emap)))
+            ''.join(map(chr, list(range(256)))), ''.join(map(chr, emap)))
         return s.translate(c.EBCDIC_TO_ASCII_MAP)
 
     MS_CHARS = { '\x80' : ('euro', '20AC'),

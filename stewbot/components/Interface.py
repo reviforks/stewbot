@@ -30,8 +30,8 @@ class Interface(object):
 
 			# get object details
 			if name not in o_dir:
-				raise InterfaceException, 'Object %s does not match required interface %s: object does not implement %s \'%s\'' % (
-				obj, interface, "method" if i_callable else "property", name)
+				raise InterfaceException('Object %s does not match required interface %s: object does not implement %s \'%s\'' % (
+				obj, interface, "method" if i_callable else "property", name))
 			o_attr = getattr(obj, name)
 			o_callable = callable(o_attr)#inspect.ismethod(o_attr) or inspect.isfunction(o_attr)
 
@@ -39,8 +39,8 @@ class Interface(object):
 
 			# type mismatch?
 			if i_callable != o_callable:
-				raise InterfaceException, 'Object %s does not match required interface %s: %s \'%s\' must be a %s' % (
-				obj, interface, "method" if o_callable else "property", name, "method" if i_callable else "property")
+				raise InterfaceException('Object %s does not match required interface %s: %s \'%s\' must be a %s' % (
+				obj, interface, "method" if o_callable else "property", name, "method" if i_callable else "property"))
 
 			# signature mismatch
 			if i_callable:
@@ -52,8 +52,8 @@ class Interface(object):
 				o_required_count = len(o_args[0]) - o_default_count
 
 				if o_required_count is not i_required_count or o_default_count is not i_default_count:
-					raise InterfaceException, 'Object %s does not match required interface %s: method \'%s\' has a different positional or keyword argument count: found (%s), but expected (%s)' % (
-					obj, interface, name, Interface._GetArgString(o_args), Interface._GetArgString(i_args))
+					raise InterfaceException('Object %s does not match required interface %s: method \'%s\' has a different positional or keyword argument count: found (%s), but expected (%s)' % (
+					obj, interface, name, Interface._GetArgString(o_args), Interface._GetArgString(i_args)))
 
 
 	@classmethod

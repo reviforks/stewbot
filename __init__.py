@@ -2,7 +2,7 @@
 	Responsible for configuring and launching stewbot.
 """
 from __config__ import config, documentation
-from stewbot import Stewardbot
+from .stewbot import Stewardbot
 
 bot = Stewardbot(
 	server           = config.irc.server,

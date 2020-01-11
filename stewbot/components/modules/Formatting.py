@@ -2,7 +2,7 @@
 	Generic library of functions for encoding, decoding, and manipulating strings.
 	@author Jesse Plamondon-Willard
 """
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import stewbot.components.modules.chardet as chardet
 
 class Formatting(object):
@@ -16,7 +16,7 @@ class Formatting(object):
 		@keyword encoding: list of strings representing encodings to prefer when attempting to decode the string.
 		@return unicode: decoded string.
 		"""
-		if isinstance(input, unicode):
+		if isinstance(input, str):
 			return input
 		elif isinstance(input, str):
 			# can it be decoded using a preferred encoding?
@@ -39,8 +39,8 @@ class Formatting(object):
 			try:
 				return Formatting.Decode(str(input))
 			except UnicodeDecodeError:
-				raise UnicodeDecodeError, 'Cannot decode non-string object with Unicode representation "%s".' % repr(
-					input)
+				raise UnicodeDecodeError('Cannot decode non-string object with Unicode representation "%s".' % repr(
+					input))
 
 	@classmethod
 	def Encode(cls, obj, encoding='utf-8'):
@@ -55,7 +55,7 @@ class Formatting(object):
 		if the string contains characters the encoding does not contain.
 		@return str: encoded string.
 		"""
-		if not isinstance(obj, unicode):
+		if not isinstance(obj, str):
 			obj = Formatting.Decode(obj)
 		return obj.encode(encoding)
 
@@ -69,6 +69,6 @@ class Formatting(object):
 		@return str: encoded URL query string.
 		"""
 		newObj = {}
-		for k in obj.keys():
+		for k in list(obj.keys()):
 			newObj[Formatting.Encode(k)] = Formatting.Encode(obj[k])
-		return urllib.urlencode(newObj)
+		return urllib.parse.urlencode(newObj)

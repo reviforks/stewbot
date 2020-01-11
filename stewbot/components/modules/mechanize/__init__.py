@@ -117,38 +117,38 @@ __all__ = [
 import logging
 import sys
 
-from _mechanize import __version__
+from ._mechanize import __version__
 
 # high-level stateful browser-style interface
-from _mechanize import \
+from ._mechanize import \
      Browser, History, \
      BrowserStateError, LinkNotFoundError, FormNotFoundError
 
 # configurable URL-opener interface
-from _useragent import UserAgentBase, UserAgent
-from _html import \
+from ._useragent import UserAgentBase, UserAgent
+from ._html import \
      Link, \
      Factory, DefaultFactory, RobustFactory, \
      FormsFactory, LinksFactory, TitleFactory, \
      RobustFormsFactory, RobustLinksFactory, RobustTitleFactory
 
 # urllib2 work-alike interface.  This is a superset of the urllib2 interface.
-from _urllib2 import *
+from ._urllib2 import *
 
 # misc
-from _http import HeadParser
-from _http import XHTMLCompatibleHeadParser
-from _opener import ContentTooShortError, OpenerFactory, urlretrieve
-from _response import \
+from ._http import HeadParser
+from ._http import XHTMLCompatibleHeadParser
+from ._opener import ContentTooShortError, OpenerFactory, urlretrieve
+from ._response import \
      response_seek_wrapper, seek_wrapped_response, make_response
-from _rfc3986 import urljoin
-from _util import http2time as str2time
+from ._rfc3986 import urljoin
+from ._util import http2time as str2time
 
 # cookies
-from _clientcookie import Cookie, CookiePolicy, DefaultCookiePolicy, \
+from ._clientcookie import Cookie, CookiePolicy, DefaultCookiePolicy, \
      CookieJar, FileCookieJar, LoadError, request_host_lc as request_host, \
      effective_request_host
-from _lwpcookiejar import LWPCookieJar, lwp_cookie_str
+from ._lwpcookiejar import LWPCookieJar, lwp_cookie_str
 # 2.4 raises SyntaxError due to generator / try/finally use
 if sys.version_info[:2] > (2,4):
     try:
@@ -156,12 +156,12 @@ if sys.version_info[:2] > (2,4):
     except ImportError:
         pass
     else:
-        from _firefox3cookiejar import Firefox3CookieJar
-from _mozillacookiejar import MozillaCookieJar
-from _msiecookiejar import MSIECookieJar
+        from ._firefox3cookiejar import Firefox3CookieJar
+from ._mozillacookiejar import MozillaCookieJar
+from ._msiecookiejar import MSIECookieJar
 
 # forms
-from _form import (
+from ._form import (
     AmbiguityError,
     ControlNotFoundError,
     FormParser,

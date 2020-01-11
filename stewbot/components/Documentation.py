@@ -68,7 +68,7 @@ class Documentation( BaseClass ):
 			elif self.tree[None]:
 				return self.tree[None]
 			else:
-				raise self.NoDefaultException, 'No arguments given, and no default response defined.'
+				raise self.NoDefaultException('No arguments given, and no default response defined.')
 
 		# fetch keys
 		subtree = self.tree
@@ -92,4 +92,4 @@ class Documentation( BaseClass ):
 			except TypeError:
 				return subtree
 		else:
-			raise self.NoSuchKeyException, 'There is no response for the given topic.'
+			raise self.NoSuchKeyException('There is no response for the given topic.')

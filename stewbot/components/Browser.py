@@ -83,7 +83,7 @@ class Browser( BaseClass ):
 
 		# return current data
 		if self.sessions[self.url_base]['logged_in']:
-			return u'%s@%s' % (self.sessions[self.url_base]['logged_in'], self.sessions[self.url_base]['base_url'])
+			return '%s@%s' % (self.sessions[self.url_base]['logged_in'], self.sessions[self.url_base]['base_url'])
 		else:
 			return self.sessions[self.url_base]['logged_in']
 
@@ -114,7 +114,7 @@ class Browser( BaseClass ):
 	###################
 	def readSessionToken( self, type ):
 		self.trace()
-		if type in self.sessions[self.url_base]['tokens'].keys():
+		if type in list(self.sessions[self.url_base]['tokens'].keys()):
 			return self.sessions[self.url_base]['tokens'][type]
 		else:
 			return None
@@ -167,7 +167,7 @@ class Browser( BaseClass ):
 		self.trace()
 
 		if not self.def_url_base:
-			raise self.Error, u'cannot resetBaseUrl() before defining default URLs'
+			raise self.Error('cannot resetBaseUrl() before defining default URLs')
 
 		self.path_index   = self.def_path_index
 		self.path_api     = self.def_path_api
@@ -203,7 +203,7 @@ class Browser( BaseClass ):
 		# get URL & query string
 		if not url:
 			if not title:
-				raise self.Error, 'Browser::load called with no URL or page title to load'
+				raise self.Error('Browser::load called with no URL or page title to load')
 			url = self.url_base + self.path_article + title
 
 		if parameters:
@@ -218,7 +218,7 @@ class Browser( BaseClass ):
 			parameters = None
 			self.last_url = url
 		else:
-			self.last_url = u'%s  <<  %s' % (url, parameters)
+			self.last_url = '%s  <<  %s' % (url, parameters)
 
 		if censor_url:
 			self.last_url = '<<hidden>>'
@@ -258,7 +258,7 @@ class Browser( BaseClass ):
 		elif parse_as == 'json':
 			self.parsed = simplejson.loads(self.Encode(self.text))
 		else:
-			raise self.Error, 'Browser::load cannot parse text as "%s", unrecognized format' % parse_as
+			raise self.Error('Browser::load cannot parse text as "%s", unrecognized format' % parse_as)
 
 
 	###################
@@ -270,9 +270,9 @@ class Browser( BaseClass ):
 
 		# validate
 		if not self.url_api:
-			raise self.Error, 'cannot queryApi() before defining base URL'
+			raise self.Error('cannot queryApi() before defining base URL')
 		if not parameters:
-			raise self.Error, 'cannot queryApi() with no parameters'
+			raise self.Error('cannot queryApi() with no parameters')
 
 
 		# parse arguments
@@ -329,7 +329,7 @@ class Browser( BaseClass ):
 		# iterate over text nodes
 		if element.childNodes:
 			nodes = element.childNodes
-			text = u''
+			text = ''
 			for node in nodes:
 				if node.nodeType == node.TEXT_NODE:
 					text = text + node.data
@@ -337,7 +337,7 @@ class Browser( BaseClass ):
 
 		# no text?
 		else:
-			return u''
+			return ''
 
 
 	###########################################################################
@@ -355,12 +355,12 @@ class Browser( BaseClass ):
 		if self.parsed.getElementsByTagName( 'error' ):
 			error = self.parsed.getElementsByTagName( 'error' )[0]
 			if error.getAttribute('code'):
-				raise self.Error, '%s: %s' % ( error.getAttribute('code'), error.getAttribute('info') )
+				raise self.Error('%s: %s' % ( error.getAttribute('code'), error.getAttribute('info') ))
 			else:
-				raise self.Error, self.readXmlElement( error )
+				raise self.Error(self.readXmlElement( error ))
 
 		if self.parsed.getElementsByTagName( 'query-continue' ):
-			raise self.Error, 'Too many results, limit set to %s' % self.max_api_items
+			raise self.Error('Too many results, limit set to %s' % self.max_api_items)
 
 		#######
 		## list = users
@@ -368,9 +368,9 @@ class Browser( BaseClass ):
 		if self.parsed.getElementsByTagName( 'users' ):
 			item = self.parsed.getElementsByTagName( 'user' )[0]
 			if item.getAttributeNode( 'invalid' ):
-				raise self.Error, 'invalid user name'
+				raise self.Error('invalid user name')
 			elif item.getAttributeNode( 'missing' ):
-				raise self.Error, 'no such user'
+				raise self.Error('no such user')
 
 		#######
 		## Log events
@@ -386,9 +386,9 @@ class Browser( BaseClass ):
 			result = self.Decode(error.getAttribute('result'))
 			if result != 'Success':
 				if result == 'NeedToken':
-					raise self.LoginTokenRequestedError, self.Decode(error.getAttribute('token'))
+					raise self.LoginTokenRequestedError(self.Decode(error.getAttribute('token')))
 				else:
-					raise self.Error, {
+					raise self.Error({
 						'NoName':'NoName: You didn\'t set the lgname parameter',
 						'Illegal':'Illegal: You provided an illegal username',
 						'NotExists':'NotExists: The username you provided doesn\'t exist',
@@ -398,7 +398,7 @@ class Browser( BaseClass ):
 						'WrongPluginPass':'WrongPluginPass: The password you provided is incorrect; an authentication plugin rather than MediaWiki itself rejected the password',
 						'CreateBlocked':'CreateBlocked: The wiki tried to automatically create a new account for you, but your IP address has been blocked from account creation',
 						'Throttled':'Throttled: You\'ve logged in too many times in a short time'
-					}.get(result, 'unknown error: "%s"' % result)
+					}.get(result, 'unknown error: "%s"' % result))
 
 		#######
 		## prop=info
@@ -407,7 +407,7 @@ class Browser( BaseClass ):
 			warnings = self.parsed.getElementsByTagName( 'warnings' )
 			if len( warnings ):
 				warning = warnings[0].getElementsByTagName( 'info' )[0]
-				raise self.Error, '%s' % self.Decode(self.readXmlElement(warning))
+				raise self.Error('%s' % self.Decode(self.readXmlElement(warning)))
 
 
 	###################
@@ -416,11 +416,11 @@ class Browser( BaseClass ):
 	def handleHtmlErrors( self ):
 		self.trace()
 
-		error = self.parsed.find( lambda tag: tag.has_key('class') and tag.get('class') in ['fail', 'error'] )
+		error = self.parsed.find( lambda tag: 'class' in tag and tag.get('class') in ['fail', 'error'] )
 
 		if error:
-			error = self.stripHtml( u'%s' % error )
-			raise self.Error, error
+			error = self.stripHtml( '%s' % error )
+			raise self.Error(error)
 
 
 	###########################################################################
@@ -443,7 +443,7 @@ class Browser( BaseClass ):
 				}, censor_url = True)
 
 			# In MediaWiki 1.15.3+, an extra step is needed
-			except self.LoginTokenRequestedError, token:
+			except self.LoginTokenRequestedError as token:
 				self.queryApi({
 					'action':'login',
 					'lgname':self.username,
@@ -484,7 +484,7 @@ class Browser( BaseClass ):
 		# fetch userrights token
 		if type == 'userrights':
 			if not user:
-				raise self.Error, "Cannot fetch userrights token without target username"
+				raise self.Error("Cannot fetch userrights token without target username")
 
 			self.queryApi({
 				'action':'query',
@@ -801,11 +801,11 @@ class Browser( BaseClass ):
 
 		# apply changes
 		changed = False
-		for group, value in groups.items():
+		for group, value in list(groups.items()):
 			try:
 				control = self.browser.find_control( 'wpGroup-%s' % group ).items[0]
 			except ValueError:
-				raise self.Error, 'no local group called "%s"' % group
+				raise self.Error('no local group called "%s"' % group)
 			if bool( control.selected ) != bool( value ):
 				control.selected = int( value )
 				changed = True
@@ -813,7 +813,7 @@ class Browser( BaseClass ):
 			if allowUnchanged:
 				return
 			else:
-				raise self.Error, 'no changes needed'
+				raise self.Error('no changes needed')
 
 		# submit form
 		self.browser.form['user-reason'] = reason
@@ -879,16 +879,16 @@ class Browser( BaseClass ):
 
 		# validate
 		if lock is None and hide is None and oversightLocal is None:
-			raise self.Error, 'no lock or hide preferences specified'
+			raise self.Error('no lock or hide preferences specified')
 		if lock not in (True, False, None) or hide not in (True, False, None) or oversightLocal not in (True, False, None):
-			raise self.Error, 'hide and lock preferences must be one of (True, False, None)'
+			raise self.Error('hide and lock preferences must be one of (True, False, None)')
 
 		# load form
 		self.load( title = 'Special:CentralAuth', parameters = {'target':user}, GET = True, visit = True, parse_as = 'html' )
 		try:
 			self.browser.select_form( predicate = lambda form: 'wpMethod' in [item.name for item in form.controls] and form['wpMethod'] == 'set-status' )
 		except mechanize.FormNotFoundError:
-			raise self.Error, 'could not find set-status form from Special:CentralAuth'
+			raise self.Error('could not find set-status form from Special:CentralAuth')
 
 		# parse input
 		NAME_LOCK = 'wpStatusLocked'
@@ -906,9 +906,9 @@ class Browser( BaseClass ):
 
 		# constants are invalid?
 		if set_lock != LOCK_IGNORE and set_lock not in [k.name for k in self.browser.find_control(NAME_LOCK).items]:
-			raise self.Error, 'invalid lock constant "%s", valid types are [%s]' % (set_lock, ', '.join([k.name for k in self.browser.find_control(NAME_LOCK).items]))
+			raise self.Error('invalid lock constant "%s", valid types are [%s]' % (set_lock, ', '.join([k.name for k in self.browser.find_control(NAME_LOCK).items])))
 		if set_hide != HIDE_IGNORE and set_hide not in [k.name for k in self.browser.find_control(NAME_HIDE).items]:
-			raise self.Error, 'invalid hide constant "%s", valid types are [%s]' % (set_hide, ', '.join([k.name for k in self.browser.find_control(NAME_HIDE).items]))
+			raise self.Error('invalid hide constant "%s", valid types are [%s]' % (set_hide, ', '.join([k.name for k in self.browser.find_control(NAME_HIDE).items])))
 
 		# don't implicitly decrease hide level
 		if set_hide == HIDE_LISTS and self.browser[NAME_HIDE][0] == HIDE_SUPPRESSED:
@@ -925,7 +925,7 @@ class Browser( BaseClass ):
 				if set_lock is not None:
 					error += ' and '
 				error += 'hidden' if set_hide == HIDE_LISTS else 'globally oversighted' if set_hide == HIDE_SUPPRESSED else 'unhidden'
-			raise self.Error, error
+			raise self.Error(error)
 
 		# modify form
 		if set_lock != LOCK_IGNORE:
@@ -951,7 +951,7 @@ class Browser( BaseClass ):
 		try:
 			self.browser.select_form( predicate = lambda form: 'wpMethod' in [item.name for item in form.controls] and form['wpMethod'] == 'set-status' )
 		except mechanize.FormNotFoundError:
-			raise self.Error, 'could not find set-status form from Special:CentralAuth'
+			raise self.Error('could not find set-status form from Special:CentralAuth')
 
 		# parse status
 		NAME_LOCK = 'wpStatusLocked'
@@ -997,7 +997,7 @@ class Browser( BaseClass ):
 		# block
 		if lock:
 			if count:
-				raise self.Error, 'That IP is already blocked%s' % ( ' as %s' % blocks_str if collateral else '' )
+				raise self.Error('That IP is already blocked%s' % ( ' as %s' % blocks_str if collateral else '' ))
 
 			# load form
 			self.load( title = 'Special:GlobalBlock', visit = True, parse_as = 'html' )
@@ -1014,11 +1014,11 @@ class Browser( BaseClass ):
 		else:
 			# not blocked
 			if not count:
-				raise self.Error, 'That IP is not blocked'
+				raise self.Error('That IP is not blocked')
 
 			# not directly blocked
 			if address not in blocks:
-				raise self.Error, 'That IP is not directly blocked (but it\'s blocked as %s)' % blocks_str
+				raise self.Error('That IP is not directly blocked (but it\'s blocked as %s)' % blocks_str)
 
 			# directly blocked, unblock
 			else:
@@ -1068,7 +1068,7 @@ class Browser( BaseClass ):
 
 		# submit
 		if not changed:
-			raise self.Error, 'no change needed'
+			raise self.Error('no change needed')
 		else:
 			wikis.sort()
 			self.browser['wpWikis'] = '\n'.join( wikis )
@@ -1126,9 +1126,9 @@ class Browser( BaseClass ):
 		source = source.lower().strip()
 		target = target.lower().strip()
 		if source == target:
-			raise self.Error, '...'
+			raise self.Error('...')
 		if len(source) > 3 or len(target) > 3:
-			raise self.Error, 'Please use valid two- or three-letter ISO 639 (1-3) language codes.'
+			raise self.Error('Please use valid two- or three-letter ISO 639 (1-3) language codes.')
 
 		#########
 		## Translate
@@ -1142,7 +1142,7 @@ class Browser( BaseClass ):
 		)
 
 		if self.parsed['responseStatus'] != 200:
-			raise self.Error, 'Error %s: %s' % (self.parsed['responseStatus'], self.parsed['responseDetails'])
+			raise self.Error('Error %s: %s' % (self.parsed['responseStatus'], self.parsed['responseDetails']))
 		result = self.parsed['responseData']['translatedText']
 		if not source:
 			source = self.parsed['responseData']['detectedSourceLanguage']

@@ -53,7 +53,7 @@ JSONDOCS = [
     # http://json.org/JSON_checker/test/fail24.json
     "['single quote']",
     # http://code.google.com/p/simplejson/issues/detail?id=3
-    u'["A\u001FZ control characters in string"]',
+    '["A\u001FZ control characters in string"]',
 ]
 
 SKIPS = {
@@ -78,14 +78,14 @@ class TestFail(TestCase):
 
     def test_array_decoder_issue46(self):
         # http://code.google.com/p/simplejson/issues/detail?id=46
-        for doc in [u'[,]', '[,]']:
+        for doc in ['[,]', '[,]']:
             try:
                 json.loads(doc)
-            except json.JSONDecodeError, e:
-                self.assertEquals(e.pos, 1)
-                self.assertEquals(e.lineno, 1)
-                self.assertEquals(e.colno, 1)
-            except Exception, e:
+            except json.JSONDecodeError as e:
+                self.assertEqual(e.pos, 1)
+                self.assertEqual(e.lineno, 1)
+                self.assertEqual(e.colno, 1)
+            except Exception as e:
                 self.fail("Unexpected exception raised %r %s" % (e, e))
             else:
                 self.fail("Unexpected success parsing '[,]'")

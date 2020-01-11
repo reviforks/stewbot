@@ -41,13 +41,13 @@ class TestIndent(TestCase):
         h3 = json.loads(d3)
         h4 = json.loads(d4)
 
-        self.assertEquals(h1, h)
-        self.assertEquals(h2, h)
-        self.assertEquals(h3, h)
-        self.assertEquals(h4, h)
-        self.assertEquals(d3, expect.replace('\t', '  '))
-        self.assertEquals(d4, expect.replace('\t', '  '))
+        self.assertEqual(h1, h)
+        self.assertEqual(h2, h)
+        self.assertEqual(h3, h)
+        self.assertEqual(h4, h)
+        self.assertEqual(d3, expect.replace('\t', '  '))
+        self.assertEqual(d4, expect.replace('\t', '  '))
         # NOTE: Python 2.4 textwrap.dedent converts tabs to spaces,
         #       so the following is expected to fail. Python 2.4 is not a
         #       supported platform in simplejson 2.1.0+.
-        self.assertEquals(d2, expect)
+        self.assertEqual(d2, expect)

@@ -105,7 +105,7 @@ class IRC( BaseClass ):
 		###################
 		def copy( self ):
 			_copy = IRC.Message()
-			for ( key, item ) in self.__dict__.items():
+			for ( key, item ) in list(self.__dict__.items()):
 				_copy.__dict__[key] = copy( item )
 			return _copy
 
@@ -204,7 +204,7 @@ class IRC( BaseClass ):
 		self.trace()
 
 		if nick:
-			msg = u'%s: %s' % ( self.Decode(nick), self.Decode(msg) )
+			msg = '%s: %s' % ( self.Decode(nick), self.Decode(msg) )
 
 		self._sendMessage(
 			target  = chan,

@@ -158,4 +158,4 @@ class GoldenTestCase(TestCase):
                 "Differences from golden files found.\n"
                 "Try running with --meld to update golden files.\n"
                 "%s" % stdout)
-        self.assertEquals(proc.wait(), 0)
+        self.assertEqual(proc.wait(), 0)

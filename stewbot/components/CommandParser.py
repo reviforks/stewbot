@@ -237,7 +237,7 @@ class CommandParser( BaseClass ):
 	###################
 	def listQueued( self ):
 		self.trace()
-		return self.commit_queue.keys()
+		return list(self.commit_queue.keys())
 
 
 	###################
@@ -291,7 +291,7 @@ class CommandParser( BaseClass ):
 
 		elif re.search( '^\d+:\d+$', ids ):
 			(min, max) = ids.split( ':', 1 )
-			ids = range( int(min), int(max) + 1 )
+			ids = list(range( int(min), int(max) + 1))
 			return self.filterByQueued( ids )
 
 		elif self.isInt( ids ):

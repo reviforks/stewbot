@@ -1,6 +1,6 @@
 import decimal
 from unittest import TestCase
-from StringIO import StringIO
+from io import StringIO
 
 import simplejson as json
 from simplejson import OrderedDict
@@ -13,19 +13,19 @@ class TestDecode(TestCase):
     def test_decimal(self):
         rval = json.loads('1.1', parse_float=decimal.Decimal)
         self.assertTrue(isinstance(rval, decimal.Decimal))
-        self.assertEquals(rval, decimal.Decimal('1.1'))
+        self.assertEqual(rval, decimal.Decimal('1.1'))
 
     def test_float(self):
         rval = json.loads('1', parse_int=float)
         self.assertTrue(isinstance(rval, float))
-        self.assertEquals(rval, 1.0)
+        self.assertEqual(rval, 1.0)
 
     def test_decoder_optimizations(self):
         # Several optimizations were made that skip over calls to
         # the whitespace regex, so this test is designed to try and
         # exercise the uncommon cases. The array cases are already covered.
         rval = json.loads('{   "key"    :    "value"    ,  "k":"v"    }')
-        self.assertEquals(rval, {"key":"value", "k":"v"})
+        self.assertEqual(rval, {"key":"value", "k":"v"})
 
     def test_empty_objects(self):
         s = '{}'
@@ -59,15 +59,15 @@ class TestDecode(TestCase):
         self.assertIs(b, d)
 
     def test_keys_reuse_str(self):
-        s = u'[{"a_key": 1, "b_\xe9": 2}, {"a_key": 3, "b_\xe9": 4}]'.encode('utf8')
+        s = '[{"a_key": 1, "b_\xe9": 2}, {"a_key": 3, "b_\xe9": 4}]'.encode('utf8')
         self.check_keys_reuse(s, json.loads)
 
     def test_keys_reuse_unicode(self):
-        s = u'[{"a_key": 1, "b_\xe9": 2}, {"a_key": 3, "b_\xe9": 4}]'
+        s = '[{"a_key": 1, "b_\xe9": 2}, {"a_key": 3, "b_\xe9": 4}]'
         self.check_keys_reuse(s, json.loads)
 
     def test_empty_strings(self):
         self.assertEqual(json.loads('""'), "")
-        self.assertEqual(json.loads(u'""'), u"")
+        self.assertEqual(json.loads('""'), "")
         self.assertEqual(json.loads('[""]'), [""])
-        self.assertEqual(json.loads(u'[""]'), [u""])
+        self.assertEqual(json.loads('[""]'), [""])
